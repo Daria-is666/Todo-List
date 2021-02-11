@@ -10,28 +10,27 @@
         </div>
         <div class="ListItem" >
             <ul>
-                <li v-for="(todo, index) in todos" :key="index">{{todo}}</li>
+                <li v-for="(todo,index) in todos" :key="index" @click="showForm(index)">{{todo.name}}</li>
             </ul>    
         </div>
         <div class="InsertList">
-            <input v-model="todo" id="addInput" class="add_list_input" placeholder="Новая список" type="text">
-            <button @click="add_list" class="add_list_btn">Добавить список</button>
+            <input v-model="todos.name" id="addInput" class="add_list_input" placeholder="Новая список" type="text">
+            <button @click="add_list()" class="add_list_btn">Добавить список</button>
         </div>
                
     </div>
 
     <div class="ItemList">
-        <p class="ItemList_title">Список дел</p>
-        <div class="ItemRow">
-            <button class="item_done">✔️</button>
-            <ul class="Item">
-                <li class="item_name">Задача 1</li>
-            </ul>
+        <p  class="ItemList_title">Список дел </p>
+        <div  class="ItemRow" v-for="(todo,index) in todoList" :key="index" v-show="checkIndex(todo.todosIndex)">
+            <input  type="checkbox" class="item_done"/>
+            <p class="item_name">{{todo.todoName}}</p>
+            <button class='trash_icon' @click="deleteTodo(index)"></button>
         </div>
        
         <div class="InsertItem">
-            <input placeholder="Новая задача" type="text">
-            <button class="add_list_btn">Добавить</button>
+            <input v-model="todoList.todoName" placeholder="Новая задача" type="text">
+            <button class="add_list_btn" @click="add_point_to_list()">Добавить</button>
         </div>   
     </div>   
 </div>
@@ -41,22 +40,67 @@
     </ul> -->
 </template>
 
-<script>
-export default {
-    props:['todos','todo'],
-    methods:{
-        // deleteToDo(index)
-        // {
-        //     this.$emit('delete-todo', index);
-        // },
-        add_list(){
-            let inputText = document.getElementById('addInput').value;
-            this.$emit('add-list',inputText);
-        }
-    }
-}
-</script>
 
+
+<script >
+import sweetalert from 'sweetalert';
+    export default {
+    props: ['todos','todoList'],
+    data() {
+      return {
+          currentTodos:0,
+      };
+    },
+    methods: {
+      showForm(index) {
+          this.currentTodos = index;
+      },
+      checkIndex(index){
+          if(this.currentTodos == index)
+              return true;             
+          else
+            return false;
+      },
+       add_list(){
+                const name = this.todos.name;           
+                this.$emit('add_list',{name});
+                this.todos.name = "";       
+        },
+        add_point_to_list(){
+            const name = this.todoList.todoName;   
+            const index = this.currentTodos;  
+            if(index != undefined && name!="" ){
+                this.$emit('add_point_to_list',
+                {todoName:name,
+                urgency:false,
+                done:false,
+                todosIndex:index}
+                );
+                this.todoList.todoName = "";
+                sweetalert('Новая задача добавлена', 'Надеюсь, это не очередное бесполезное просиживание штанов в тик-токе', 'success');
+            }          
+        },
+         deleteTodo(index) {
+            sweetalert({
+              title: 'Ты точно этого хочешь?',
+              text: 'Сейчас удалишь, потом будешь 100 лет вспоминать',
+              type: 'warning',
+              showCancelButton: true,
+              buttons:true,
+              confirmButtonColor: '#DD6B55',
+              confirmButtonText: 'Удаляй!',
+              closeOnConfirm: false,
+            }).then((willDelete) => {
+                if(willDelete){
+                    this.$emit('deleteTodo',index);
+                    sweetalert('Удалено', 'Ты об это еще пожалеешь', 'success');
+                }
+       
+      });
+    },
+    }
+};
+</script>
 
 <style>
 h1,h2,h3,h4,h5,h6,p {
@@ -120,6 +164,14 @@ margin: 0;
     width: 100%;
     max-width: 65%;
     border: 1px solid black;
+}
+.trash_icon
+{
+    position: absolute;
+    right: 0;
+    background-image: url(../assets/garbage.png);
+    width: 25px;
+    height: 25px;
 }
 .ItemRow
 {
