@@ -2,29 +2,30 @@
 <div class="Todo">
     <div class="List">
         <div class="Filter">
-            <select class="selectCategory">
-                <option >Все категории</option>
-                <option> Выполненные  </option>
-                <option> Невыполненные  </option>
+            <select @change="doneFilter_List($event)" class="selectCategory">
+                <option value="all">Все</option>
+                <option value="done"> Выполненные </option>
+                <option value="undone"> Невыполненные </option>
             </select>
         </div>
         <div class="ListItem" >
             <ul>
-                <li v-for="(todo,index) in todos" :key="index" @click="showForm(index)">{{todo.name}}</li>
+                <li v-for="(todo,index) in todos" :key="index" @click="showForm(index)" v-bind:class="{ active: isAll }" v-show="checkFilter(index)">{{todo.name}}</li>
             </ul>    
         </div>
         <div class="InsertList">
-            <input v-model="todos.name" id="addInput" class="add_list_input" placeholder="Новая список" type="text">
+            <input v-model="todos.name" id="addInput" class="add_list_input" placeholder="Новый список" type="text">
             <button @click="add_list()" class="add_list_btn">Добавить список</button>
         </div>
                
     </div>
 
     <div class="ItemList">
-        <p  class="ItemList_title">Список дел </p>
+        <h1  class="ItemList_title" v-show="checkCurrentTodos()">{{header}}</h1>
         <div  class="ItemRow" v-for="(todo,index) in todoList" :key="index" v-show="checkIndex(todo.todosIndex)">
-            <input  type="checkbox" class="item_done"/>
-            <p class="item_name">{{todo.todoName}}</p>
+            <input  type="checkbox" class="item_done" id="status_box" @click="add_done_status(index)"/>
+            <h2 class="item_name">{{todo.todoName}}</h2>
+            <h3 class="fullDate">{{todo.date}}</h3>
             <button class='trash_icon' @click="deleteTodo(index)"></button>
         </div>
        
@@ -34,21 +35,21 @@
         </div>   
     </div>   
 </div>
-
-    <!-- <ul>
-        <li v-for="(todo, index) in todos" @click="deleteToDo(index)" :key="index"> {{todo}}</li>
-    </ul> -->
 </template>
-
 
 
 <script >
 import sweetalert from 'sweetalert';
+import moment from 'moment';
     export default {
     props: ['todos','todoList'],
     data() {
       return {
-          currentTodos:0,
+          currentTodos:null,
+          header: "",
+          isAll:true,
+          isDone:false,
+          isUndone:false
       };
     },
     methods: {
@@ -61,24 +62,96 @@ import sweetalert from 'sweetalert';
           else
             return false;
       },
+      checkCurrentTodos(){
+          if(this.currentTodos != null){
+              this.header = this.todos[this.currentTodos].name;
+              return true;
+          }
+          else
+            return false;
+      },
        add_list(){
                 const name = this.todos.name;           
-                this.$emit('add_list',{name});
+                this.$emit('add_list',{name:name,
+                doneFilter: false});
                 this.todos.name = "";       
         },
         add_point_to_list(){
             const name = this.todoList.todoName;   
-            const index = this.currentTodos;  
+            const index = this.currentTodos; 
+           const dateFull = new Date();
             if(index != undefined && name!="" ){
                 this.$emit('add_point_to_list',
                 {todoName:name,
                 urgency:false,
-                done:false,
-                todosIndex:index}
-                );
+                done: false,
+                todosIndex:index,
+                date:moment(dateFull).format('L') + moment(dateFull).format('LT')
+                });
                 this.todoList.todoName = "";
                 sweetalert('Новая задача добавлена', 'Надеюсь, это не очередное бесполезное просиживание штанов в тик-токе', 'success');
             }          
+        },
+        add_done_status(index){
+            const status = document.getElementById('status_box');
+            this.todoList[index].done = status.checked;
+            this.$emit('add_done_status',index,status.checked);
+        },
+
+        doneFilter_List(event)
+        {
+             for (let i = 0; i < this.todos.length; i++) {
+                       for (let index = 0; index < this.todoList.length; index++) {
+                           if(i == this.todoList[index].todosIndex)
+                           {
+                                if(this.todoList[index].done == false)
+                                {
+                                    this.$emit('changeDoneFilterStatus',index,false);
+                                    break;
+                                }
+                                if(this.todoList[index].done != false)
+                                {
+                                    this.$emit('changeDoneFilterStatus',index,true);
+                                }
+                            }              
+                        } 
+                    }
+                    console.log(this.todos);  
+                    console.log(this.todoList); 
+            if(event.target.value == "all"){
+                this.isAll = true;
+                this.isDone = false;
+                this.isDone = false;
+            }
+            else if(event.target.value == "done"){
+                this.isDone = true;
+                this.isUndone = false;
+                this.isAll = false;
+            }
+             else if(event.target.value == "undone"){
+                this.isUndone = true;
+                this.isDone = false;
+                this.isAll = false;
+            }
+            this.currentTodos = null; 
+        },
+        checkFilter(index){
+            if(this.isAll)
+                return true;  
+            else if(this.isDone){
+                if(this.todos[index].doneFilter == true){
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else if(this.isUndone){
+                 if(this.todos[index].doneFilter == false){
+                    return true;
+                }
+                else
+                    return false;
+            }
         },
          deleteTodo(index) {
             sweetalert({
@@ -119,6 +192,10 @@ margin: 0;
 </style>
 <style scoped>
 /* Списки дел */
+.active
+{
+    color: brown;
+}
 .Todo
 {   
  display: flex;
