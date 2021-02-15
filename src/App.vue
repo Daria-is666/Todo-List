@@ -17,7 +17,8 @@ export default {
     return{
       todos:[{
         name:"",
-        doneFilter:false
+        doneFilter:false,
+        isEmpty:true
       }],
       todoList:[{
           todoName:"",
@@ -43,6 +44,7 @@ export default {
     },
     add_point_to_list(pointContent){
       this.todoList.push(pointContent);
+      this.todos[pointContent.todosIndex].isEmpty = false;
     },
     deleteTodo(index) {
       // const todoIndex = this.todos.index(todo);
@@ -50,7 +52,6 @@ export default {
     },
     add_done_status(index,status){
         this.todoList[index].done = status;
-        console.log( this.todoList[index].done);
     },
     changeDoneFilterStatus(index,status){
       this.todos[this.todoList[index].todosIndex].doneFilter = status;

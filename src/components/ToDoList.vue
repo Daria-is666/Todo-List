@@ -9,9 +9,9 @@
             </select>
         </div>
         <div class="ListItem" >
-            <ul>
-                <li v-for="(todo,index) in todos" :key="index" @click="showForm(index)" v-bind:class="{ active: isAll }" v-show="checkFilter(index)">{{todo.name}}</li>
-            </ul>    
+            <div class="ListStyle" v-for="(todo,index) in todos" :key="index" @click="showForm(index)" v-bind:class="[{activeClass : todos[index].doneFilter && !todos[index].isEmpty}, {unactiveClass : !todos[index].doneFilter && !todos[index].isEmpty} , {errorClass : todos[index].isEmpty}]" v-show="checkFilter(index)">
+                <h1>{{todo.name}}</h1>
+            </div>
         </div>
         <div class="InsertList">
             <input v-model="todos.name" id="addInput" class="add_list_input" placeholder="Новый список" type="text">
@@ -30,8 +30,12 @@
         </div>
        
         <div class="InsertItem">
-            <input v-model="todoList.todoName" placeholder="Новая задача" type="text">
-            <button class="add_list_btn" @click="add_point_to_list()">Добавить</button>
+            <div>
+                <input v-model="todoList.todoName" placeholder="Новая задача" type="text">
+                 <button class="add_list_btn" @click="add_point_to_list()">Добавить</button>
+            </div>  
+            <label for="urgencyCheck"><input type="checkbox" id="urgencyCheck"> Cрочное</label>
+            
         </div>   
     </div>   
 </div>
@@ -73,7 +77,8 @@ import moment from 'moment';
        add_list(){
                 const name = this.todos.name;           
                 this.$emit('add_list',{name:name,
-                doneFilter: false});
+                doneFilter: false,
+                isEmpty:true,});
                 this.todos.name = "";       
         },
         add_point_to_list(){
@@ -96,28 +101,42 @@ import moment from 'moment';
             const status = document.getElementById('status_box');
             this.todoList[index].done = status.checked;
             this.$emit('add_done_status',index,status.checked);
+              for (let i = 0; i < this.todos.length; i++) {
+                    for (let index = 0; index < this.todoList.length; index++) {
+                        if(i == this.todoList[index].todosIndex)
+                        {
+                            if(this.todoList[index].done == false)
+                            {
+                                this.$emit('changeDoneFilterStatus',index,false);
+                                break;
+                            }
+                            if(this.todoList[index].done != false)
+                        {
+                            this.$emit('changeDoneFilterStatus',index,true);
+                        }
+                    }              
+                } 
+            }
         },
 
         doneFilter_List(event)
         {
              for (let i = 0; i < this.todos.length; i++) {
-                       for (let index = 0; index < this.todoList.length; index++) {
-                           if(i == this.todoList[index].todosIndex)
-                           {
-                                if(this.todoList[index].done == false)
-                                {
-                                    this.$emit('changeDoneFilterStatus',index,false);
-                                    break;
-                                }
-                                if(this.todoList[index].done != false)
-                                {
-                                    this.$emit('changeDoneFilterStatus',index,true);
-                                }
-                            }              
-                        } 
-                    }
-                    console.log(this.todos);  
-                    console.log(this.todoList); 
+                    for (let index = 0; index < this.todoList.length; index++) {
+                        if(i == this.todoList[index].todosIndex)
+                        {
+                            if(this.todoList[index].done == false)
+                            {
+                                this.$emit('changeDoneFilterStatus',index,false);
+                                break;
+                            }
+                            if(this.todoList[index].done != false)
+                        {
+                            this.$emit('changeDoneFilterStatus',index,true);
+                        }
+                    }              
+                } 
+            }
             if(event.target.value == "all"){
                 this.isAll = true;
                 this.isDone = false;
@@ -189,13 +208,22 @@ margin: 0;
 
   color: var(--main);
 }
+/* .activeClass
+{
+    background: green;
+}
+.unactiveClass
+{
+    background: red;
+}
+.errorClass
+{
+    background: gray;
+} */
 </style>
 <style scoped>
 /* Списки дел */
-.active
-{
-    color: brown;
-}
+
 .Todo
 {   
  display: flex;
@@ -242,6 +270,16 @@ margin: 0;
     max-width: 65%;
     border: 1px solid black;
 }
+.ListStyle.activeClass{
+background: green;
+}
+.ListStyle.errorClass{
+ background: gray;
+}
+.ListStyle.unactiveClass
+{
+    background: red;
+}
 .trash_icon
 {
     position: absolute;
@@ -264,11 +302,10 @@ margin: 0;
 {
     position:absolute;
     bottom:0;
-    right: 0;
-    left: 0;
     width: 100%;;
-    display: flex; 
-    flex-direction: column;
+   justify-content: space-around;
+   display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
 }
 .item_name
