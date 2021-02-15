@@ -1,41 +1,39 @@
 <template>
-<div class="Todo">
-    <div class="List">
+<div class="todo">
+    <div class="list">
         <div class="Filter">
-            <select @change="doneFilter_List($event)" class="selectCategory">
+            <select @change="doneFilterList($event)" class="select_category">
                 <option value="all">Все</option>
                 <option value="done"> Выполненные </option>
                 <option value="undone"> Невыполненные </option>
             </select>
         </div>
-        <div class="ListItem" >
-            <div class="ListStyle" v-for="(todo,index) in todos" :key="index" @click="showForm(index)" v-bind:class="[{activeClass : todos[index].doneFilter && !todos[index].isEmpty}, {unactiveClass : !todos[index].doneFilter && !todos[index].isEmpty} , {errorClass : todos[index].isEmpty}]" v-show="checkFilter(index)">
+        <div class="list_item" >
+            <div class="list_style" v-for="(todo,index) in todos" :key="index" @click="showForm(index)" v-bind:class="[{activeClass : todos[index].doneFilter && !todos[index].isEmpty}, {unactiveClass : !todos[index].doneFilter && !todos[index].isEmpty} , {errorClass : todos[index].isEmpty}]" v-show="checkFilter(index)">
                 <h1>{{todo.name}}</h1>
             </div>
         </div>
-        <div class="InsertList">
+        <div class="insert_list">
             <input v-model="todos.name" id="addInput" class="add_list_input" placeholder="Новый список" type="text">
-            <button @click="add_list()" class="add_list_btn">Добавить список</button>
-        </div>
-               
+            <button @click="addList()" class="add_list_btn">Добавить список</button>
+        </div>     
     </div>
 
-    <div class="ItemList">
-        <h1  class="ItemList_title" v-show="checkCurrentTodos()">{{header}}</h1>
-        <div  class="ItemRow" v-for="(todo,index) in todoList" :key="index" v-show="checkIndex(todo.todosIndex)">
-            <input  type="checkbox" class="item_done" id="status_box" @click="add_done_status(index)"/>
+    <div class="item_list">
+        <h1  class="item_list_title" v-show="checkCurrentTodos()">{{header}}</h1>
+        <div  class="item_row" v-for="(todo,index) in todoList" :key="index" v-show="checkIndex(todo.todosIndex)">
+            <input  type="checkbox" class="item_done" id="status_box" @click="addDoneStatus(index)"/>
             <h2 class="item_name">{{todo.todoName}}</h2>
-            <h3 class="fullDate">{{todo.date}}</h3>
+            <h3 class="full_date">{{todo.date}}</h3>
             <button class='trash_icon' @click="deleteTodo(index)"></button>
         </div>
        
-        <div class="InsertItem">
+        <div class="insert_item">
             <div>
                 <input v-model="todoList.todoName" placeholder="Новая задача" type="text">
-                 <button class="add_list_btn" @click="add_point_to_list()">Добавить</button>
+                 <button class="add_list_btn" @click="addPointToList()">Добавить</button>
             </div>  
-            <label for="urgencyCheck"><input type="checkbox" id="urgencyCheck"> Cрочное</label>
-            
+            <label for="urgency_check"><input type="checkbox" id="urgency_check"> Cрочное</label>    
         </div>   
     </div>   
 </div>
@@ -74,19 +72,19 @@ import moment from 'moment';
           else
             return false;
       },
-       add_list(){
+       addList(){
                 const name = this.todos.name;           
-                this.$emit('add_list',{name:name,
+                this.$emit('addList',{name:name,
                 doneFilter: false,
                 isEmpty:true,});
                 this.todos.name = "";       
         },
-        add_point_to_list(){
+        addPointToList(){
             const name = this.todoList.todoName;   
             const index = this.currentTodos; 
            const dateFull = new Date();
             if(index != undefined && name!="" ){
-                this.$emit('add_point_to_list',
+                this.$emit('addPointToList',
                 {todoName:name,
                 urgency:false,
                 done: false,
@@ -97,10 +95,10 @@ import moment from 'moment';
                 sweetalert('Новая задача добавлена', 'Надеюсь, это не очередное бесполезное просиживание штанов в тик-токе', 'success');
             }          
         },
-        add_done_status(index){
+        addDoneStatus(index){
             const status = document.getElementById('status_box');
             this.todoList[index].done = status.checked;
-            this.$emit('add_done_status',index,status.checked);
+            this.$emit('addDoneStatus',index,status.checked);
               for (let i = 0; i < this.todos.length; i++) {
                     for (let index = 0; index < this.todoList.length; index++) {
                         if(i == this.todoList[index].todosIndex)
@@ -118,8 +116,7 @@ import moment from 'moment';
                 } 
             }
         },
-
-        doneFilter_List(event)
+        doneFilterList(event)
         {
              for (let i = 0; i < this.todos.length; i++) {
                     for (let index = 0; index < this.todoList.length; index++) {
@@ -208,35 +205,21 @@ margin: 0;
 
   color: var(--main);
 }
-/* .activeClass
-{
-    background: green;
-}
-.unactiveClass
-{
-    background: red;
-}
-.errorClass
-{
-    background: gray;
-} */
 </style>
+
 <style scoped>
 /* Списки дел */
-
-.Todo
+.todo
 {   
  display: flex;
  justify-content: space-between;
 }
-
-.ItemList_title
+.item_list_title
 {
     text-align: center;
-    margin-top: 10px;
-    
+    margin-top: 10px;  
 }
-.List
+.list
 {
     position: relative;
     width: 100%;
@@ -245,13 +228,13 @@ margin: 0;
     height: 700px;
   
 }
-.selectCategory
+.select_category
 {
     border-radius: 15px;  
     width: 90%;
 
 }
-.InsertList
+.insert_list
 {
     position:absolute;
     bottom:0;
@@ -263,20 +246,20 @@ margin: 0;
 }
 
 /* Задачи */
-.ItemList
+.item_list
 {
     position: relative;
     width: 100%;
     max-width: 65%;
     border: 1px solid black;
 }
-.ListStyle.activeClass{
+.list_style.activeClass{
 background: green;
 }
-.ListStyle.errorClass{
+.list_style.errorClass{
  background: gray;
 }
-.ListStyle.unactiveClass
+.list_style.unactiveClass
 {
     background: red;
 }
@@ -288,7 +271,7 @@ background: green;
     width: 25px;
     height: 25px;
 }
-.ItemRow
+.item_row
 {
     border: 1px solid black;
     width: 100%;
@@ -298,7 +281,7 @@ background: green;
     display: flex;
     flex-flow: row wrap;   
 }
-.InsertItem
+.insert_item
 {
     position:absolute;
     bottom:0;
@@ -312,5 +295,4 @@ background: green;
 {
     list-style-type: none;
 }
-
 </style>

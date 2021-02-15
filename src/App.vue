@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <ToDoList :todos="todos" :todoList="todoList" @add_list = "add_list" @add_point_to_list = "add_point_to_list"  @deleteTodo="deleteTodo" @add_done_status = "add_done_status" @changeDoneFilterStatus = "changeDoneFilterStatus" />
+    <to-do-list :todos="todos" :todoList="todoList" @addList = "addList" @addPointToList = "addPointToList"  @deleteTodo="deleteTodo" @addDoneStatus = "addDoneStatus" @changeDoneFilterStatus = "changeDoneFilterStatus" />
     <!-- <create-todo v-on:create-todo="createTodo"/> -->
     <!-- <ToDoList :todos.sync="todos" :todo.sync ="todo" @add-list = "add_list"/> -->
   </div>
@@ -8,7 +8,8 @@
 
 <script>
 // import sweetalert from 'sweetalert';
-import ToDoList from './components/ToDoList';
+// import ToDoList from './components/ToDoList';
+import ToDoList from './components/ToDoList.vue';
 // import TodoCreate from './components/TodoCreate';
 
 export default {
@@ -34,23 +35,21 @@ export default {
     this.todoList.splice(0,1);
   },
   components: {
-   ToDoList,
-  //  TodoCreate,
+    ToDoList,
   },
   methods:{
-    add_list(text){
+    addList(text){
       this.todos.push(text);
       this.todos.name = "";
     },
-    add_point_to_list(pointContent){
+    addPointToList(pointContent){
       this.todoList.push(pointContent);
       this.todos[pointContent.todosIndex].isEmpty = false;
     },
     deleteTodo(index) {
-      // const todoIndex = this.todos.index(todo);
       this.todoList.splice(index, 1);
     },
-    add_done_status(index,status){
+    addDoneStatus(index,status){
         this.todoList[index].done = status;
     },
     changeDoneFilterStatus(index,status){
