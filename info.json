@@ -1,0 +1,26 @@
+{
+    "todos": [{
+        "name": "clear",
+        "doneFilter": false,
+        "isEmpty": true,
+        "todoList": [{
+            "todoName":"Купить шампунь",
+            "urgency": false,
+            "done": false,
+            "todosIndex":0,
+            "date": null 
+        }]
+    },
+    {
+        "name": "pie",
+        "doneFilter": false,
+        "isEmpty": true,
+        "todoList": [{
+            "todoName":"Купить шампунь",
+            "urgency": false,
+            "done": false,
+            "todosIndex":0,
+            "date": null 
+        }]
+    }]       
+}

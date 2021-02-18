@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <to-do-list :todos="todos" :todoList="todoList" @addList = "addList" @addPointToList = "addPointToList"  @deleteTodo="deleteTodo" @addDoneStatus = "addDoneStatus" @changeDoneFilterStatus = "changeDoneFilterStatus" />
-    <!-- <create-todo v-on:create-todo="createTodo"/> -->
-    <!-- <ToDoList :todos.sync="todos" :todo.sync ="todo" @add-list = "add_list"/> -->
+    <div class="todo">
+      <to-do-list :currentTodos="currentTodos" :todos="todos" :todoList="todoList"  @addPointToList = "addPointToList"  @addDoneStatus = "addDoneStatus"  @deleteTodo="deleteTodo" @changeDoneFilterStatus = "changeDoneFilterStatus"/>
+      <to-do-create :currentTodos="currentTodos" :todos="todos" :todoList="todoList" @addList = "addList"  @changeCurrentTodos = "changeCurrentTodos"  />
+    </div>
+    
   </div>
 </template>
 
 <script>
-// import sweetalert from 'sweetalert';
-// import ToDoList from './components/ToDoList';
 import ToDoList from './components/ToDoList.vue';
-// import TodoCreate from './components/TodoCreate';
+import ToDoCreate from './components/ToDoCreate.vue';
 
 export default {
   name: 'App',
@@ -27,7 +27,8 @@ export default {
           done: false,
           todosIndex:0,
           date: null
-      }]
+      }],
+      currentTodos:null
     }
   },
   mounted(){
@@ -36,6 +37,7 @@ export default {
   },
   components: {
     ToDoList,
+    ToDoCreate
   },
   methods:{
     addList(text){
@@ -54,10 +56,20 @@ export default {
     },
     changeDoneFilterStatus(index,status){
       this.todos[this.todoList[index].todosIndex].doneFilter = status;
+      console.log( this.todos[this.todoList[index].todosIndex].doneFilter);
+    },
+    changeCurrentTodos(index){
+      this.currentTodos = index;
     }
+
   }
 };
 </script>
 
 <style lang="scss">
+.todo
+{   
+ display: flex;
+ justify-content: space-between;
+}
 </style>
