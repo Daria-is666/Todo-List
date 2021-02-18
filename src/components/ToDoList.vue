@@ -1,8 +1,7 @@
 <template>
-
     <div class="item_list">
         <h1  class="item_list_title" v-show="checkCurrentTodos()">{{header}}</h1>
-        <div  class="item_row" v-for="(todo,index) in todoList" :key="index" v-show="checkIndex(todo.todosIndex)">
+        <div  class="item_row" v-for="(todo,index) in allTodoList" :key="index" v-show="checkIndex(todo.todosIndex)">
             <input  type="checkbox" class="item_done" id="status_box" @click="addDoneStatus(index)"/>
             <h2 class="item_name">{{todo.todoName}}</h2>
             <h3 class="full_date">{{todo.date}}</h3>
@@ -10,11 +9,11 @@
         </div>
        
         <div class="insert_item">
-            <div>
-                <input v-model="todoList.todoName" placeholder="Новая задача" type="text">
-                 <button class="add_list_btn" @click="addPointToList()">Добавить</button>
+            <div class="insert_list_item">
+                <input v-model="allTodoList.todoName" class="add_list_input" placeholder="Новая задача" type="text">
+                 <button class="add_list_btn" @click="addPointToList()">Добавить дело</button>
             </div>  
-            <label for="urgency_check"><input type="checkbox" id="urgency_check"> Cрочное</label>    
+            <input type="checkbox" id="urgency_check" class="urgency_check">
         </div>   
     </div>   
 </template>
@@ -23,45 +22,56 @@
 <script >
 import sweetalert from 'sweetalert';
 import moment from 'moment';
+import { mapMutations } from 'vuex';
 
     export default {
-    props: ['todos','todoList','currentTodos'],
+    props: ['currentTodos'],
     data() {
       return {
           header: "",
+          allTodoList: this.$store.getters.allTodoList,
+          allTodos: this.$store.getters.allTodos
       };
     },
     methods: {
-        addPointToList(){
-            const name = this.todoList.todoName;   
+         ...mapMutations(["createTodoList"]),
+        addPointToList(){ 
+            const name = this.allTodoList.todoName;   
             const index = this.currentTodos;
            const dateFull = new Date();
             if(index != undefined && name!="" ){
-                this.$emit('addPointToList',
-                {todoName:name,
+                this.createTodoList({
+                    todoName:name,
                 urgency:false,
                 done: false,
                 todosIndex:index,
                 date:moment(dateFull).format('L') + moment(dateFull).format('LT')
-                });
-                this.todoList.todoName = "";
+                })
+                // this.$emit('addPointToList',
+                // {todoName:name,
+                // urgency:false,
+                // done: false,
+                // todosIndex:index,
+                // date:moment(dateFull).format('L') + moment(dateFull).format('LT')
+                // });
+                this.allTodoList.todoName = "";
                 sweetalert('Новая задача добавлена', 'Надеюсь, это не очередное бесполезное просиживание штанов в тик-токе', 'success');
             }          
         },
         addDoneStatus(index){
         const status = document.getElementById('status_box');
-        this.todoList[index].done = status.checked;
+        this.allTodoList[index].done = status.checked;
         this.$emit('addDoneStatus',index,status.checked);
-          for (let i = 0; i < this.todos.length; i++) {
-                for (let index = 0; index < this.todoList.length; index++) {
-                    if(i == this.todoList[index].todosIndex)
+          for (let i = 0; i < this.allTodos.length; i++) {
+                for (let index = 0; index < this.allTodoList.length; index++) {
+                    if(i == this.allTodoList[index].todosIndex)
                     {
-                        if(this.todoList[index].done == false)
+                        if(this.allTodoList[index].done == false)
                         {
                             this.$emit('changeDoneFilterStatus',index,false);
                             break;
                         }
-                        if(this.todoList[index].done != false)
+                        if(this.allTodoList[index].done != false)
                     {
                         this.$emit('changeDoneFilterStatus',index,true);
                     }
@@ -81,7 +91,8 @@ import moment from 'moment';
        },
         checkCurrentTodos(){
           if(this.currentTodos != null){
-              this.header = this.todos[this.currentTodos].name;
+              console.log("121239898912");
+              this.header = this.allTodos[this.currentTodos].name;
               return true;
           }
           else
@@ -118,10 +129,12 @@ margin: 0;
   width: 100%;
   max-width: 1000px;
   box-shadow: 0 3px 20px #00000023;
+  border-radius: 15px;
   font-family: 'Gilroy', sans-serif;
   padding: 10px;
   margin: 0 auto;
  color: var(--main);
+ background: rgb(221, 220, 220);
 }
 </style>
 
@@ -129,59 +142,78 @@ margin: 0;
 
 
 /* Задачи */
+.item_list
+{
+    position: relative;
+    width: 100%;
+    max-width: 60%;
+    border: 1px solid teal;
+    border-radius: 15px;
+    box-shadow: 0 0 25px  teal;
+    background: white;
+    height: 700px;
+}
 .item_list_title
 {
     text-align: center;
     margin-top: 10px;  
 }
-.item_list
+.insert_list_item
 {
-    position: relative;
-    width: 100%;
-    max-width: 30%;
-    border: 1px solid black;
-    height: 700px;
-}
-.list_style.activeClass{
-background: green;
-}
-.list_style.errorClass{
- background: gray;
-}
-.list_style.unactiveClass
-{
-    background: red;
+
+    display:flex;
+    width: 80%;
+    margin: 0 auto;
 }
 .trash_icon
 {
     position: absolute;
-    right: 0;
+    right: 10px;
     background-image: url(../assets/garbage.png);
     width: 25px;
     height: 25px;
 }
 .item_row
 {
-    border: 1px solid black;
+    position: relative;
+    border: 1px solid teal;
+    border-radius: 5px;
+    padding: 5px 5px 5px 0;
     width: 100%;
-    max-width: 90%;
+    max-width: 80%;
     margin: 0 auto;
-    margin-top: 10px;
+    text-align: center;
+    margin-top: 15px;
     display: flex;
     flex-flow: row wrap;   
+}
+.full_date
+{
+    position: absolute;
+    right: 40px;
+    font-size: 15px;
 }
 .insert_item
 {
     position:absolute;
     bottom:0;
-    width: 100%;;
-   justify-content: space-around;
-   display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    left: 20%; 
+    right: 20%;
+    margin-bottom: 10px; 
+    display: flex;
+    justify-content: space-between;
+    
+}
+.urgency_check
+{
+    position: relative;
+    right: 10px;
+    display: flex;
 }
 .item_name
 {
     list-style-type: none;
+    margin-left: 10px;
+
 }
 </style>

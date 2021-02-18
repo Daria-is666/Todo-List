@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <div class="todo">
-      <to-do-list :currentTodos="currentTodos" :todos="todos" :todoList="todoList"  @addPointToList = "addPointToList"  @addDoneStatus = "addDoneStatus"  @deleteTodo="deleteTodo" @changeDoneFilterStatus = "changeDoneFilterStatus"/>
-      <to-do-create :currentTodos="currentTodos" :todos="todos" :todoList="todoList" @addList = "addList"  @changeCurrentTodos = "changeCurrentTodos"  />
+      <to-do-create :currentTodos="currentTodos" @addList = "addList"  @changeCurrentTodos = "changeCurrentTodos"  />
+      <to-do-list :currentTodos="currentTodos"   @addPointToList = "addPointToList"  @addDoneStatus = "addDoneStatus"  @deleteTodo="deleteTodo" @changeDoneFilterStatus = "changeDoneFilterStatus"/>
     </div>
     
   </div>
@@ -11,56 +11,65 @@
 <script>
 import ToDoList from './components/ToDoList.vue';
 import ToDoCreate from './components/ToDoCreate.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'App',
   data(){
     return{
-      todos:[{
-        name:"",
-        doneFilter:false,
-        isEmpty:true
-      }],
-      todoList:[{
-          todoName:"",
-          urgency: false,
-          done: false,
-          todosIndex:0,
-          date: null
-      }],
       currentTodos:null
     }
   },
-  mounted(){
-    this.todos.splice(0,1);
-    this.todoList.splice(0,1);
+  // :mapGetters(["allTodos"],["allTodoList"]),
+  computed:{
+    allTodos(){
+      return this.$store.getters.allTodos
+    },
+    allTodoList(){
+      return this.$store.getters.allTodoList
+    }
+  },
+  // mounted(){
+  //   this.todos.splice(0,1);
+  //   this.todoList.splice(0,1);
+  //   console.log(`сячсячячссячсячсячясч`);
+    
+  // },
+  async mounted(){
+    // this.fetchTodos();
+    // this.fetchTodoList();
+    this.$store.dispatch("fetchTodos");
+    this.$store.dispatch("fetchTodoList");
+    // console.log(this.$store.getters.allTodos);
+   
   },
   components: {
-    ToDoList,
-    ToDoCreate
+    ToDoCreate,
+    ToDoList
   },
   methods:{
     addList(text){
-      this.todos.push(text);
-      this.todos.name = "";
+      this.allTodos.push(text);
+      this.allTodos.name = "";
     },
     addPointToList(pointContent){
-      this.todoList.push(pointContent);
-      this.todos[pointContent.todosIndex].isEmpty = false;
+      this.allTodoList.push(pointContent);
+      this.allTodos[pointContent.todosIndex].isEmpty = false;
     },
     deleteTodo(index) {
-      this.todoList.splice(index, 1);
+      this.allTodoList.splice(index, 1);
     },
     addDoneStatus(index,status){
-        this.todoList[index].done = status;
+        this.allTodoList[index].done = status;
     },
     changeDoneFilterStatus(index,status){
-      this.todos[this.todoList[index].todosIndex].doneFilter = status;
-      console.log( this.todos[this.todoList[index].todosIndex].doneFilter);
+      this.allTodos[this.allTodoList[index].todosIndex].doneFilter = status;
+      // console.log( this.todos[this.todoList[index].todosIndex].doneFilter);
     },
     changeCurrentTodos(index){
       this.currentTodos = index;
     }
+
 
   }
 };

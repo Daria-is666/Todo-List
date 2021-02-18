@@ -1,26 +1,42 @@
 {
     "todos": [{
-        "name": "clear",
+        "name": "Помыть кошку",
         "doneFilter": false,
-        "isEmpty": true,
-        "todoList": [{
-            "todoName":"Купить шампунь",
-            "urgency": false,
-            "done": false,
-            "todosIndex":0,
-            "date": null 
-        }]
+        "isEmpty": true  
     },
     {
-        "name": "pie",
+        "name": "Спасти землю от апокалипсиса",
         "doneFilter": false,
-        "isEmpty": true,
-        "todoList": [{
-            "todoName":"Купить шампунь",
-            "urgency": false,
-            "done": false,
-            "todosIndex":0,
-            "date": null 
-        }]
-    }]       
+        "isEmpty": true
+        
+    }],
+    "todoList": [{
+       "todoName":"Купить шампунь",
+        "urgency": false,
+        "done": false,
+        "todosIndex":0,
+        "date": null 
+    },
+    {
+        "todoName":"Купить броню из стали",
+         "urgency": false,
+         "done": false,
+         "todosIndex":0,
+         "date": null 
+     },
+    {
+        "todoName":"Выспаться",
+         "urgency": false,
+         "done": false,
+         "todosIndex":1,
+         "date": null 
+    },
+    {
+        "todoName":"Покушать",
+         "urgency": false,
+         "done": false,
+         "todosIndex":1,
+         "date": null 
+    }]
 }
+    
