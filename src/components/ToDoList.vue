@@ -3,7 +3,7 @@
         <h1  class="item_list_title" v-show="checkCurrentTodos()">{{header}}</h1>
         <div  class="item_row" v-for="(todo,index) in allTodoList" :key="index" v-show="checkIndex(todo.todosIndex)">
             <input  type="checkbox" class="item_done" id="status_box" @click="addDoneStatus(index)"/>
-            <h2 class="item_name">{{todo.todoName}}</h2>
+            <h2 class="item_name" v-bind:class="{active_class: allTodoList[index].urgency}">{{todo.todoName}}</h2>
             <h3 class="full_date">{{todo.date}}</h3>
             <button class='trash_icon' @click="deleteTodo(index)"></button>
         </div>
@@ -13,7 +13,7 @@
                 <input v-model="allTodoList.todoName" class="add_list_input" placeholder="Новая задача" type="text">
                  <button class="add_list_btn" @click="addPointToList()">Добавить дело</button>
             </div>  
-            <!-- <input type="checkbox" id="urgency_check"  class="urgency_check" > -->
+            <input type="checkbox" id="urgency_check" v-model="allTodoList.urgency" class="urgency_check">
         </div>   
     </div>   
 </template>
@@ -42,11 +42,12 @@ import { mapMutations, mapGetters } from 'vuex';
         addPointToList(){ 
             const name = this.allTodoList.todoName;   
             const index = this.currentTodos;
+            const urgency = this.allTodoList.urgency;
            const dateFull = new Date();
             if(index != undefined && name!="" ){
                 this.createTodoList({
                 todoName:name,
-                urgency:false,
+                urgency:urgency,
                 done: false,
                 todosIndex:index,
                 date:moment(dateFull).format('L') + moment(dateFull).format('LT')
@@ -55,7 +56,8 @@ import { mapMutations, mapGetters } from 'vuex';
                 sweetalert('Новая задача добавлена', 'Надеюсь, это не очередное бесполезное просиживание штанов в тик-токе', 'success');
                  this.allTodoList= this.$store.getters.allTodoList;
                  this.allTodos= this.$store.getters.allTodo;
-            }          
+            }  
+            console.log( urgency)        
         },
         addDoneStatus(index){
         this.allTodoList= this.$store.getters.allTodoList;
@@ -212,6 +214,9 @@ margin: 0;
     position: relative;
     right: 10px;
     display: flex;
+}
+.item_name.active_class{
+    color: rgb(233, 2, 2);
 }
 .item_name
 {
