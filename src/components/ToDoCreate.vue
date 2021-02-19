@@ -9,7 +9,7 @@
         </div>
         <div class="list_item" >
             <div class="list_style" v-for="(todo,index) in allTodos" :key="index" @click="changeCurrentTodos(index)" v-bind:class="[{activeClass : allTodos[index].doneFilter && !allTodos[index].isEmpty}, {unactiveClass : !allTodos[index].doneFilter && !allTodos[index].isEmpty} , {errorClass : allTodos[index].isEmpty}]" v-show="checkFilter(index)">
-                <h1>{{todo.name}}</h1>
+                <router-link to="/task" class="todo_name_link">{{todo.name}}</router-link>
                 <hr>
             </div>
         </div>
@@ -30,18 +30,18 @@ export default{
           isAll:true,
           isDone:false,
           isUndone:false,
-          allTodos: this.$store.getters.allTodos,
+          allTodos: this.$store.getters.allTodo,
         allTodoList: this.$store.getters.allTodoList,
       };
     },
     mounted(){
         console.log("this.allTodos.length");
-    },  
+    },      
     methods: {
         ...mapMutations(["createTodos"]),
       changeCurrentTodos(index) {
         this.$emit('changeCurrentTodos', index);
-        console.log(this.currentTodos);
+        // console.log(this.currentTodos);
        },
         checkIndex(index){
           if(this.currentTodos == index)
@@ -49,14 +49,6 @@ export default{
           else
             return false;
 
-       },
-        checkCurrentTodos(){
-          if(this.currentTodos != null){
-              this.header = this.allTodos[this.currentTodos].name;
-              return true;
-          }
-          else
-            return false;
        },
        addList(){
         const name = this.allTodos.name;      
@@ -161,6 +153,13 @@ export default{
     box-shadow: 0 0  25px  teal;
     background: white;
     
+}
+.todo_name_link
+{
+    color: black;
+    font-size: 15px;
+    font-style: bold;
+    text-decoration: none;
 }
 .list_item
 {

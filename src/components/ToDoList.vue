@@ -22,7 +22,7 @@
 <script >
 import sweetalert from 'sweetalert';
 import moment from 'moment';
-import { mapMutations } from 'vuex';
+import { mapMutations, mapGetters } from 'vuex';
 
     export default {
     props: ['currentTodos'],
@@ -30,9 +30,13 @@ import { mapMutations } from 'vuex';
       return {
           header: "",
           allTodoList: this.$store.getters.allTodoList,
-          allTodos: this.$store.getters.allTodos
+          allTodos: this.$store.getters.allTodo
       };
     },
+    mounted(){
+        console.log("1111");
+    },  
+    computed:mapGetters(['allTodo']),
     methods: {
          ...mapMutations(["createTodoList"]),
         addPointToList(){ 
@@ -47,13 +51,6 @@ import { mapMutations } from 'vuex';
                 todosIndex:index,
                 date:moment(dateFull).format('L') + moment(dateFull).format('LT')
                 })
-                // this.$emit('addPointToList',
-                // {todoName:name,
-                // urgency:false,
-                // done: false,
-                // todosIndex:index,
-                // date:moment(dateFull).format('L') + moment(dateFull).format('LT')
-                // });
                 this.allTodoList.todoName = "";
                 sweetalert('Новая задача добавлена', 'Надеюсь, это не очередное бесполезное просиживание штанов в тик-токе', 'success');
             }          
@@ -91,7 +88,6 @@ import { mapMutations } from 'vuex';
        },
         checkCurrentTodos(){
           if(this.currentTodos != null){
-              console.log("121239898912");
               this.header = this.allTodos[this.currentTodos].name;
               return true;
           }
@@ -136,6 +132,7 @@ margin: 0;
  color: var(--main);
  background: rgb(221, 220, 220);
 }
+
 </style>
 
 <style >

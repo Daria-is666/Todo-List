@@ -1,4 +1,3 @@
-
 import Axios from 'axios';
 export default{
     actions:{
@@ -11,7 +10,6 @@ export default{
               .catch((err)=>{
                   console.log(err);
               });
-            //   const todos = await res.json();
               
         }
     },
@@ -31,7 +29,7 @@ export default{
           }],
     },
     getters:{
-        allTodos(state)
+        allTodo(state)
         {
             return state.todos
         }

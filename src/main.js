@@ -2,10 +2,12 @@ import Vue from 'vue'
 import store from './store'
 import App from './App.vue'
 import './registerServiceWorker'
+import router from './router'
 
 Vue.config.productionTip = false
 
 new Vue({
-  store: store,
+  router,
+  store,
   render: h => h(App),
 }).$mount('#app')
