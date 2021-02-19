@@ -8,9 +8,8 @@
             </select>
         </div>
         <div class="list_item" >
-            <div class="list_style" v-for="(todo,index) in allTodos" :key="index" @click="changeCurrentTodos(index)" v-bind:class="[{activeClass : allTodos[index].doneFilter && !allTodos[index].isEmpty}, {unactiveClass : !allTodos[index].doneFilter && !allTodos[index].isEmpty} , {errorClass : allTodos[index].isEmpty}]" v-show="checkFilter(index)">
+            <div class="list_style" v-for="(todo,index) in allTodos" :key="index"  :class="[{activeClass : allTodos[index].doneFilter && !allTodos[index].isEmpty}, {unactiveClass : !allTodos[index].doneFilter && !allTodos[index].isEmpty} , {errorClass : allTodos[index].isEmpty}]" @click="changeCurrentTodos(index)"  v-show="checkFilter(index)">
                 <router-link to="/task" class="todo_name_link">{{todo.name}}</router-link>
-                <hr>
             </div>
         </div>
         <div class="insert_list">
@@ -27,10 +26,10 @@ export default{
     props: ['currentTodos'],
     data() {
       return {
-          isAll:true,
-          isDone:false,
-          isUndone:false,
-          allTodos: this.$store.getters.allTodo,
+        isAll:true,
+        isDone:false,
+        isUndone:false,
+        allTodos: this.$store.getters.allTodo,
         allTodoList: this.$store.getters.allTodoList,
       };
     },
@@ -38,10 +37,9 @@ export default{
         console.log("this.allTodos.length");
     },      
     methods: {
-        ...mapMutations(["createTodos"]),
-      changeCurrentTodos(index) {
+        ...mapMutations(["createTodos","setDoneFilterStatus"]),
+       changeCurrentTodos(index) {
         this.$emit('changeCurrentTodos', index);
-        // console.log(this.currentTodos);
        },
         checkIndex(index){
           if(this.currentTodos == index)
@@ -51,50 +49,35 @@ export default{
 
        },
        addList(){
-        const name = this.allTodos.name;      
+        const name = this.allTodos.name;    
            this.createTodos({
                 name:name,
                 doneFilter: false,
                 isEmpty:true,
            })
-            this.allTodos.name = "";       
-        },
-        addDoneStatus(index){
-            const status = document.getElementById('status_box');
-            this.allTodoList[index].done = status.checked;
-            this.$emit('addDoneStatus',index,status.checked);
-              for (let i = 0; i < this.allTodos.length; i++) {
-                    for (let index = 0; index < this.allTodoList.length; index++) {
-                        if(i == this.allTodoList[index].todosIndex)
-                        {
-                            if(this.allTodoList[index].done == false)
-                            {
-                                this.$emit('changeDoneFilterStatus',index,false);
-                                break;
-                            }
-                            if(this.allTodoList[index].done != false)
-                        {
-                            this.$emit('changeDoneFilterStatus',index,true);
-                        }
-                    }              
-                } 
-            }
+            this.allTodos.name = "";
+            this.allTodos = this.$store.getters.allTodo; 
+            
         },
         doneFilterList(event)
         {
+            this.allTodoList = this.$store.getters.allTodoList;
              for (let i = 0; i < this.allTodos.length; i++) {
                     for (let index = 0; index < this.allTodoList.length; index++) {
                         if(i == this.allTodoList[index].todosIndex)
                         {
+                            let key = this.allTodoList[index].todosIndex;
                             if(this.allTodoList[index].done == false)
                             {
-                                this.$emit('changeDoneFilterStatus',index,false);
+                                this.setDoneFilterStatus({key:key,
+                                status:false});
                                 break;
                             }
                             if(this.allTodoList[index].done != false)
-                        {
-                            this.$emit('changeDoneFilterStatus',index,true);
-                        }
+                            {
+                                  this.setDoneFilterStatus({key:key,
+                                  status:true});
+                            }
                     }              
                 } 
             }
@@ -114,8 +97,10 @@ export default{
                 this.isAll = false;
             }
              this.$emit('changeCurrentTodos', null);
+
         },
         checkFilter(index){
+            this.allTodos = this.$store.getters.allTodo;
             if(this.isAll)
                 return true;  
             else if(this.isDone){
@@ -174,8 +159,9 @@ export default{
 }
 .list_style
 {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     border-radius: 5px;
+    padding: 5px;
 }
 .filter
 {
@@ -219,13 +205,13 @@ export default{
 {
   opacity: 1;
 }
-.ListStyle.activeClass{
+.list_style.activeClass{
 background: green;
 }
-.ListStyle.errorClass{
+.list_style.errorClass{
  background: gray;
 }
-.ListStyle.unactiveClass
+.list_style.unactiveClass
 {
     background: red;
 }

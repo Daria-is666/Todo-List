@@ -16,9 +16,14 @@ export default{
     mutations:{
         updateTodos(state,todos){
             state.todos = todos;
+            
+            
         },
         createTodos(state,newTodos){
             state.todos.push(newTodos);
+        },
+        setDoneFilterStatus(state,data){
+            state.todos[data.key].doneFilter = data.status;
         }
     },
     state:{

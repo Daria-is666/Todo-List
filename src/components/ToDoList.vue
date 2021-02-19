@@ -13,7 +13,7 @@
                 <input v-model="allTodoList.todoName" class="add_list_input" placeholder="Новая задача" type="text">
                  <button class="add_list_btn" @click="addPointToList()">Добавить дело</button>
             </div>  
-            <input type="checkbox" id="urgency_check" class="urgency_check">
+            <!-- <input type="checkbox" id="urgency_check"  class="urgency_check" > -->
         </div>   
     </div>   
 </template>
@@ -38,14 +38,14 @@ import { mapMutations, mapGetters } from 'vuex';
     },  
     computed:mapGetters(['allTodo']),
     methods: {
-         ...mapMutations(["createTodoList"]),
+         ...mapMutations(["createTodoList","deleteTodoList","setStatus","setDoneFilterStatus"]),
         addPointToList(){ 
             const name = this.allTodoList.todoName;   
             const index = this.currentTodos;
            const dateFull = new Date();
             if(index != undefined && name!="" ){
                 this.createTodoList({
-                    todoName:name,
+                todoName:name,
                 urgency:false,
                 done: false,
                 todosIndex:index,
@@ -53,33 +53,36 @@ import { mapMutations, mapGetters } from 'vuex';
                 })
                 this.allTodoList.todoName = "";
                 sweetalert('Новая задача добавлена', 'Надеюсь, это не очередное бесполезное просиживание штанов в тик-токе', 'success');
+                 this.allTodoList= this.$store.getters.allTodoList;
+                 this.allTodos= this.$store.getters.allTodo;
             }          
         },
         addDoneStatus(index){
+        this.allTodoList= this.$store.getters.allTodoList;
+        this.allTodos= this.$store.getters.allTodo;
         const status = document.getElementById('status_box');
         this.allTodoList[index].done = status.checked;
-        this.$emit('addDoneStatus',index,status.checked);
+        this.setStatus({index:index,status:status.checked});
           for (let i = 0; i < this.allTodos.length; i++) {
                 for (let index = 0; index < this.allTodoList.length; index++) {
                     if(i == this.allTodoList[index].todosIndex)
                     {
+                         let key = this.allTodoList[index].todosIndex;
                         if(this.allTodoList[index].done == false)
                         {
-                            this.$emit('changeDoneFilterStatus',index,false);
+                             this.setDoneFilterStatus({key:key,
+                                status:false});
                             break;
                         }
                         if(this.allTodoList[index].done != false)
-                    {
-                        this.$emit('changeDoneFilterStatus',index,true);
-                    }
+                        {
+                             this.setDoneFilterStatus({key:key,
+                                status:true});
+                        }
                 }              
             } 
         }
     },
-    //     showForm(index) {
-         
-    //      console.log(this.currentTodos);
-    //    },
         checkIndex(index){
           if(this.currentTodos == index)
               return true;             
@@ -87,6 +90,7 @@ import { mapMutations, mapGetters } from 'vuex';
             return false;
        },
         checkCurrentTodos(){
+        this.allTodos= this.$store.getters.allTodo;
           if(this.currentTodos != null){
               this.header = this.allTodos[this.currentTodos].name;
               return true;
@@ -95,6 +99,7 @@ import { mapMutations, mapGetters } from 'vuex';
             return false;
        },
          deleteTodo(index) {
+            this.allTodoList= this.$store.getters.allTodoList;
             sweetalert({
               title: 'Ты точно этого хочешь?',
               text: 'Сейчас удалишь, потом будешь 100 лет вспоминать',
@@ -106,9 +111,10 @@ import { mapMutations, mapGetters } from 'vuex';
               closeOnConfirm: false,
             }).then((willDelete) => {
                 if(willDelete){
-                    this.$emit('deleteTodo',index);
+                    this.deleteTodoList(index);
                     sweetalert('Удалено', 'Ты об это еще пожалеешь', 'success');
                 }
+           
        
       });
     },

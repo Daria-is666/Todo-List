@@ -19,6 +19,14 @@ export default{
         },
         createTodoList(state,newtodoList){
             state.todoList.push(newtodoList);
+        },
+        deleteTodoList(state,index)
+        {
+            state.todoList.splice(index, 1);
+        },
+        setStatus(state,data)
+        {
+            state.todoList[data.index].done = data.status;
         }
     },
     state:{
